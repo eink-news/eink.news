@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "key": "hackernews",
+      "name": "Hacker News",
+      "url": "https://news.ycombinator.com"
+    },
+    {
+      "key": "newyorktimes",
+      "name": "New York Times",
+      "url": "http://nytimes.com"
+    },
+    {
+      "key": "elmundo",
+      "name": "El Mundo",
+      "url": "http://elmundo.es"
+    },
+    {
+      "key": "indiehackers",
+      "name": "IndieHackers",
+      "url": "https://www.indiehackers.com/businesses"
+    }
+  ]
+}
