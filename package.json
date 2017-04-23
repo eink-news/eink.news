@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -w src --exec \"babel-node src --presets es2015,stage-0\"",
+    "start": "babel-node src --presets es2015,stage-0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
