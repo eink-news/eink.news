@@ -66,13 +66,15 @@ const askhackernews = function(epub){
 
               const commentsIndentationRegex = /<td class='ind'><img src="s\.gif" height="1" width="(\w\d*)"><\/td>/g
               const commentsIndentation = getMatches(articleContent, commentsIndentationRegex, nComments, 1)
+              const newIndentations = commentsIndentation.map((indentation) => parseInt(indentation)/40)
+              // console.log(newIndentations);
               // console.log('all information is ready to get the content!');
 
               let cleanedArticleContent = ""
               if (nComments > 1) {
                 for (var i = 0; i < nComments; i++) {
                   // console.log('i= ', i);
-                  cleanedArticleContent += `<div style="margin-left:${commentsIndentation[i]}px;"><p><b style="color: grey;">${usernames[i]}: &nbsp;</b>${comments[i]}</p></div>`
+                  cleanedArticleContent += `<div style="margin-left:${newIndentations[i]}em;"><p><b style="color: grey;">${usernames[i]}: &nbsp;</b>${comments[i]}</p></div>`
                   if (i==nComments-1) {
                     // console.log("pushing into final_response article number: ", index);
                     const headerWithComments = "(" + nComments + ") " + header
