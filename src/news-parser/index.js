@@ -26,7 +26,7 @@ const createEbook  = function(subscription) {
   // Works with only one domain for now
   const key = filteredSource[0].key
   const url = filteredSource[0].url
-  const sourceName = filteredSource[0].name
+  const sourceName = filteredSource[0].name.split(' ').join('_')
   const locale = "en-us"
   const stringMonth = date.toLocaleString(locale, { month: "long" });
   const name = `${sourceName}_${hour}h${minute}-${day}-${stringMonth}-${year}`

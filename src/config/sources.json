@@ -19,6 +19,11 @@
       "key": "indiehackers",
       "name": "IndieHackers",
       "url": "https://www.indiehackers.com/businesses"
+    },
+    {
+      "key": "askhackernews",
+      "name": "Ask Hacker News",
+      "url": "https://news.ycombinator.com/ask"
     }
   ]
 }

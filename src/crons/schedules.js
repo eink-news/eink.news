@@ -22,6 +22,11 @@ const schedules = [
     source: 'indiehackers',
     hourFreq: '*/3',
     timeZone: 'America/Los_Angeles'
+  },
+  {
+    source: 'askhackernews',
+    hourFreq: '*',
+    timeZone: 'America/Los_Angeles'
   }
 ]
 
