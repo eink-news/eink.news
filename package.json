@@ -2,9 +2,11 @@
   "name": "eink-bundle",
   "version": "1.0.0",
   "description": "eink.news bundles creator",
-  "main": "index.js",
+  "main": "dist",
   "scripts": {
     "dev": "nodemon -w src --exec \"babel-node src --presets es2015,stage-0\"",
+    "start": "node dist",
+    "build": "rm -rf dist && babel src -s -D -d dist --presets es2015,stage-0",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
