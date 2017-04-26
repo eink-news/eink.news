@@ -16,7 +16,7 @@ function scheduleBundles(){
     const source = schedule.source
     const hourFreq = schedule.hourFreq
     const timeZone = schedule.timeZone
-    const cronTime = `00 26 ${hourFreq} * * *` // se creara el bundle cada horafreq horas, con un desfase de timer minutos
+    const cronTime = `00 ${timer} ${hourFreq} * * *` // se creara el bundle cada horafreq horas, con un desfase de timer minutos
     new CronJob({
       cronTime: cronTime,
       onTick: function() {

@@ -23,8 +23,6 @@ const createEbook  = function(subscription) {
     return subscription === source.key ? true : false
   })
 
-  // Works with only one domain for now
-  // console.log(filteredSource[0]);
   const key = filteredSource[0].key
   const url = filteredSource[0].url
   const sourceName = filteredSource[0].name.split(' ').join('_')
@@ -39,11 +37,9 @@ const createEbook  = function(subscription) {
     clean: false,
     bookname: `${name}.mobi`
   }
-  console.log("Getting content from: ",url);
   return new Promise((resolve, reject) => {
     return new Promise(function(resolve){ //Obtencion de info de la pagina que queremoss parsear, tenemos en cuenta si es http o https
       if (url.indexOf("https") >= 0){
-        // console.log("https");
         https.get(url, (res) => {
           var data = []
           res.on('data', (d) => {
@@ -59,7 +55,6 @@ const createEbook  = function(subscription) {
       }
       else{
         http.get(url, (res) => {
-          // console.log('http');
           var data = []
           res.on('data', (d) => {
             data.push(d)
