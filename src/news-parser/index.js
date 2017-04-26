@@ -19,14 +19,15 @@ const createEbook  = function(subscription) {
   const minute = date.getMinutes()
   const year = date.getFullYear()
 
-  const filteredSource = sources.sources.filter(source => { // no se bien bien que hace
-    return subscription.indexOf(source.key) > -1
+  const filteredSource = sources.sources.filter(source => {
+    return subscription === source.key ? true : false
   })
 
   // Works with only one domain for now
+  // console.log(filteredSource[0]);
   const key = filteredSource[0].key
   const url = filteredSource[0].url
-  const sourceName = filteredSource[0].name
+  const sourceName = filteredSource[0].name.split(' ').join('_')
   const locale = "en-us"
   const stringMonth = date.toLocaleString(locale, { month: "long" });
   const name = `${sourceName}_${hour}h${minute}-${day}-${stringMonth}-${year}`
@@ -38,11 +39,11 @@ const createEbook  = function(subscription) {
     clean: false,
     bookname: `${name}.mobi`
   }
-console.log(url);
+  console.log("Getting content from: ",url);
   return new Promise((resolve, reject) => {
     return new Promise(function(resolve){ //Obtencion de info de la pagina que queremoss parsear, tenemos en cuenta si es http o https
       if (url.indexOf("https") >= 0){
-        console.log("https");
+        // console.log("https");
         https.get(url, (res) => {
           var data = []
           res.on('data', (d) => {
@@ -58,7 +59,7 @@ console.log(url);
       }
       else{
         http.get(url, (res) => {
-          console.log('http');
+          // console.log('http');
           var data = []
           res.on('data', (d) => {
             data.push(d)
