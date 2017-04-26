@@ -1,6 +1,7 @@
 const CronJob = require('cron').CronJob
 import https from 'https'
 import fs from 'fs'
+import Promise from 'bluebird'
 
 import Ebook from '../models/Ebook'
 import schedules from './schedules.js'
@@ -19,37 +20,60 @@ function scheduleBundles(){
     new CronJob({
       cronTime: cronTime,
       onTick: function() {
-        let ebookData
-        // Ara mateix la funció createEbook llegia el bundleType i les subscriptions d'un user per a crear el ebook corresponent
-        // a les seves necessitats.
-        // Cal fer de nou el index.js de news-parser per a que ara el que revi sigui només el nom del source del que s'ha de crear
+      // variables declaration
+        var ebookData
+        var ebookSize
+        var ebookSizeDB
+      // create ebook
         createEbook([source])
         .then((data) => {
           ebookData = data
-          uploadToS3(ebookData.epubPath, {bundleType: 'epub', name: ebookData.name})
+          // Ebook.remove({'parser': source}, {}, { sort: { 'time' : -1 } })
         })
         .then(() => {
-          uploadToS3(ebookData.mobiPath, {bundleType: 'mobi', name: ebookData.name})
-        })
-        .then(() => {
-          const time = new Date();
-          fs.stat(ebookData.epubPath,(err , stats) => {
-            new Ebook({parser: source, name: ebookData.name, size: stats.size, time: time}).save()
-            return true
+          return new Promise((resolve) => {
+            fs.stat(ebookData.epubPath,(err , stats) => { ebookSize = stats.size; return resolve(ebookSize) })
           })
         })
         .then(() => {
-           fs.unlink(ebookData.epubPath, (err) => {
-             if (err) throw err;
-           });
-           fs.unlink(ebookData.mobiPath, (err) => {
-             if (err) throw err;
-           });
-         })
-        .then(()=> {
-          https.get("https://hchk.io/39f91551-ad45-4f81-8c2d-bb1b2bb109b2");
+          Ebook.findOne({'parser': source}, {}, { sort: { 'time' : -1 } })
+          .then((EbookDB) => {
+            if(EbookDB != null){
+              ebookSizeDB = EbookDB.size
+            }else{ // primera vez que se hace un ebook de un parser
+              ebookSizeDB = 0
+            }
+          })
+          .then(() => {
+            if (ebookSizeDB < ebookSize+5 || ebookSizeDB > ebookSize-5){
+            }else{
+              return new Promise((resolve, reject) => {
+                uploadToS3(ebookData.epubPath, {bundleType: 'epub', name: ebookData.name})
+                .then(() => {
+                  uploadToS3(ebookData.mobiPath, {bundleType: 'mobi', name: ebookData.name})
+                })
+                .then(() => {
+                  const time = new Date();
+                  new Ebook({parser: source, name: ebookData.name, size: ebookSize, time: time}).save()
+                  .then(() => {
+                    resolve(true)
+                  })
+                })
+              })
+            }
+          })
+          .then(() => {
+             fs.unlink(ebookData.epubPath, (err) => {
+               if (err) throw err;
+             });
+             fs.unlink(ebookData.mobiPath, (err) => {
+               if (err) throw err;
+             });
+           })
+          .then(()=> {
+            https.get("https://hchk.io/39f91551-ad45-4f81-8c2d-bb1b2bb109b2");
+          })
         })
-
       },
       start: true,
       timeZone: timeZone
