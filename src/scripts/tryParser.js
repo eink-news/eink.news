@@ -1,4 +1,4 @@
-import createEbook from './news-parser/index'
+import createEbook from '../news-parser/index'
 
 const parser = process.env.PARSER
 console.log("Parsing ", parser);

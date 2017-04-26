@@ -8,7 +8,7 @@
     "start": "node dist",
     "build": "rm -rf dist && babel src -s -D -d dist --presets es2015,stage-0",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "parse": "nodemon -w src --exec \"babel-node src/tryParser.js --presets es2015,stage-0\""
+    "parse": "nodemon -w src --exec \"babel-node src/scripts/tryParser.js --presets es2015,stage-0\""
   },
   "repository": {
     "type": "git",
