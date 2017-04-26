@@ -85,7 +85,7 @@ console.log(url);
             }
             new Epub(options, epubPath).promise
               .then(function() {
-                  resolve (epubPath)
+                  return resolve (epubPath)
                }, function(err) {
                   return reject(err)
               })
@@ -95,28 +95,15 @@ console.log(url);
     .then(() => {
       return new Promise ((resolve) => {
         zipper.create(mobiOptions).then(() => {
-          resolve(mobiPath)
+          return resolve(mobiPath)
         }).catch(err => console.error(err))
       })
     })
     .then(() => {
-      uploadToS3(epubPath, {bundleType: 'epub', name: name})
-    })
-    .then(() => {
-      uploadToS3(mobiPath, {bundleType: 'mobi', name: name})
-    })
-    .then(() => {
-      fs.unlink(epubPath, (err) => {
-        if (err) throw err;
-      });
-      fs.unlink(mobiPath, (err) => {
-        if (err) throw err;
-      });
+      return resolve({name: name, mobiPath: mobiPath, epubPath: epubPath})
     })
     .catch(function (err) {
       console.log(err);
-    //Upload an error epub & mobi bundle to s3 saying we are sorry
-    //send us an email notifying something happened
       return reject(err)
     })
   })
