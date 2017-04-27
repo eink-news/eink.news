@@ -28,6 +28,7 @@ function scheduleBundles(){
         createEbook([source])
         .then((data) => {
           ebookData = data
+          console.log(ebookData);
         })
         .then(() => {
           return new Promise((resolve) => {
@@ -41,17 +42,25 @@ function scheduleBundles(){
               ebookSizeDB = EbookDB.size
             }else{ // primera vez que se hace un ebook de un parser
               ebookSizeDB = 0
+              console.log("first time");
             }
           })
           .then(() => {
-            if (ebookSizeDB < ebookSize+5 || ebookSizeDB > ebookSize-5){
+          console.log(ebookSize);
+          console.log(ebookSizeDB);
+            if (ebookSizeDB < ebookSize+5 && ebookSizeDB > ebookSize-5){
+              console.log('same-size');
             }else{
+              console.log('different-size');
               return new Promise((resolve, reject) => {
+                console.log("aws-epub");
                 uploadToS3(ebookData.epubPath, {bundleType: 'epub', name: ebookData.name})
                 .then(() => {
+                  console.log('aws-mobi');
                   uploadToS3(ebookData.mobiPath, {bundleType: 'mobi', name: ebookData.name})
                 })
                 .then(() => {
+                  console.log('db');
                   const time = new Date();
                   new Ebook({parser: source, name: ebookData.name, size: ebookSize, time: time}).save()
                   .then(() => {
@@ -62,6 +71,7 @@ function scheduleBundles(){
             }
           })
           .then(() => {
+            console.log('deleting-files');
              fs.unlink(ebookData.epubPath, (err) => {
                if (err) throw err;
              });
