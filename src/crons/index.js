@@ -28,7 +28,6 @@ function scheduleBundles(){
         createEbook([source])
         .then((data) => {
           ebookData = data
-          // Ebook.remove({'parser': source}, {}, { sort: { 'time' : -1 } })
         })
         .then(() => {
           return new Promise((resolve) => {

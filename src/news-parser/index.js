@@ -20,9 +20,8 @@ const createEbook  = function(subscription) {
   const year = date.getFullYear()
 
   const filteredSource = sources.sources.filter(source => {
-    return subscription === source.key ? true : false
+    return subscription[0] === source.key ? true : false
   })
-
   const key = filteredSource[0].key
   const url = filteredSource[0].url
   const sourceName = filteredSource[0].name.split(' ').join('_')
