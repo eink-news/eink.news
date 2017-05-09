@@ -1,6 +1,8 @@
 var read = require('node-readability');
 import Promise from 'bluebird'
 import getMatches from '../../helpers/get-matches.js'
+import https from 'https'
+import getHNComments from '../../helpers/parsing/get-HN-comments'
 
 const hackernewsParser = function(epub){
   return new Promise(function(resolve) {
@@ -12,6 +14,7 @@ const hackernewsParser = function(epub){
 
     const regex_url_article = /<a href="(.*)" class="storylink"(?: rel="nofollow")?>/g
     const articlesUrl = getMatches(articles.join(), regex_url_article, articles.length)
+    console.log(articlesUrl);
 
     const regex_article_id = /<\/span> \| <a href="hide\?id=(.*?)&amp;goto=news">(?:[0-9]*&nbsp;comments|discuss|hide)<\/a>/g
     const articlesId = getMatches(articles.join(), regex_article_id, articles.length, 1)
@@ -21,10 +24,14 @@ const hackernewsParser = function(epub){
 
     Promise.mapSeries(articles, (function(a, index) {
       return new Promise(function(resolve){
-        // if its a normal article
-        if (articlesUrl[index].test(/\/\//g)) {
+        // if its a normal article (we know it because it has //, HN links like askHN or hiring are relative urls)
+        const articleUrl = articlesUrl[index]
+        const isNormalUrlRegex = /\/\//g
+        if (isNormalUrlRegex.test(articleUrl)) {
           console.log('reading content from website!');
           const url = articlesUrl[index]
+          // for testing purposes and going faster, uncomment next line to skip reading the website
+          // resolve({page: 'Development mode, not reading.', index:index})
           read(url, function(err, page){
             page ? resolve({page:page.content, index:index}) : resolve(null)
           })
@@ -32,26 +39,81 @@ const hackernewsParser = function(epub){
           console.log('its not a normal article. Might be an askHN or a Hiring');
           const url = `https://news.ycombinator.com/item?id=${articlesId[index]}`
           // follow the url and get the question if there is so
-          const question = ''
+          const question = 'Parse as askHN or hiring!'
           resolve({page: question, index:index})
         }
       })
     }))
       .then(function(articlesParsed){
         Promise.mapSeries(articlesParsed, (function(articleP) {
-          console.log("crash");
+          console.log("Articles content gotten. Getting comments...");
           return new Promise(function(resolve){
-            if(articleP == null){ resolve(false)}
-            else if(articleP.page != false & articlesUrlComments[articleP.index] != null){
-                read('https://news.ycombinator.com/'+articlesUrlComments[articleP.index], function(err, page){
-                  console.log('insidetheread');
-                  final_response.push({ title: articlesTitles[articleP.index], data: articleP.page})
-                  page.content ? final_response.push({ title: 'Comments:'+articlesTitles[articleP.index], data:page.content}) : ''
-                  console.log("crashasdf");
-                  resolve(true)
+            if(articleP == null){
+              resolve(false)
+            }
+            else if (articleP.page != false){
+              // We should only get the comments if the article isnt an askHN or hiring
+              const isNormalUrlRegex = /\/\//g
+              if (isNormalUrlRegex.test(articlesUrl[articleP.index])) {
+                const commentsUrl = 'https://news.ycombinator.com/item?id='+articlesId[articleP.index]
+                https.get(commentsUrl, (res) => {
+                  var data = []
+                  res.on('data', (d) => {
+                    data.push(d)
+                  }).on('end', function() {
+                    const commentsHtml = Buffer.concat(data).toString()
+                    getHNComments(commentsHtml).then((parsedComments)=> {
+                      // add n of comments to the title of the article
+                      const articleTitle = '(' + parsedComments.nComments + ') ' + articlesTitles[articleP.index]
+                      const articleCommentsTitle = 'Comments'
+                      // add the article itself to the ebook
+                      final_response.push({title: articleTitle, data: articleP.page})
+                      // add the comments to the ebook
+                      final_response.push({title: articleCommentsTitle, data: parsedComments.content})
+                      console.log('Added article content and Comments to ebook!');
+                      resolve(true)
+                    })
+                  }).on('error', (e) => {
+                    console.error("There's been an error getting the html content for this url: ", url);
+                    console.error(e)
+                    resolve(false)
+                  })
                 })
+              } else {
+                // Its askHN or hiring, so parse only comments as the article content
+                const url = `https://news.ycombinator.com/item?id=${articlesId[articleP.index]}`
+                https.get(url, (res) => {
+                  var data = []
+                  res.on('data', (d) => {
+                    data.push(d)
+                  }).on('end', function() {
+                    const commentsHtml = Buffer.concat(data).toString()
+                    getHNComments(commentsHtml).then((parsedComments)=> {
+                      // add n of comments to the title of the article
+                      const articleTitle = '(' + parsedComments.nComments + ') ' + articlesTitles[articleP.index]
+                      // add the article itself to the ebook
+                      final_response.push({title: articleTitle, data: parsedComments.content})
+                      resolve(true)
+                    }).catch((err)=>{
+                      // no ha pogut parsejar els comentaris
+                      console.log('Problem with:');
+                      console.log('--> ', url);
+                      console.log(commentsHtml);
+                      resolve()
+                    })
+                  }).on('error', (e) => {
+                    console.error("There's been an error getting the html content for this url: ", url);
+                    console.log('It seems its a hiring article. Confirm with the following output:');
+                    console.error(e)
+                    resolve(false)
+                  })
+                })
+
               }
-            else{resolve(false)}
+            } else {
+              console.log('Ups! Something happended and we coudnt parse the content nor comments');
+              resolve(false)
+            }
           })
         }),{concurrency: 2})
         .then(function() {
