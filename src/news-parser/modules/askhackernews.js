@@ -36,6 +36,11 @@ const askhackernews = function(epub){
               //   final_response.push({title: headerWithComments, data: commentsContent.content})
               //   resolve(true)
               // })
+              getHNComments(articleContent).then((commentsContent) => {
+                const headerWithComments = "(" + commentsContent.nComments + ") " + titles[index].replace('Ask HN: ', '')
+                final_response.push({title: headerWithComments, data: commentsContent.content})
+                resolve(true)
+              })
           })
         }).on('error', (e) => {
           console.error("There's been an error getting the html content for this url: ", urls[index]);

@@ -19,11 +19,9 @@ const createEbook  = function(subscription) {
   const minute = date.getMinutes()
   const year = date.getFullYear()
 
-  const filteredSource = sources.sources.filter(source => { // no se bien bien que hace
-    return subscription.indexOf(source.key) > -1
+  const filteredSource = sources.sources.filter(source => {
+    return subscription[0] === source.key ? true : false
   })
-
-  // Works with only one domain for now
   const key = filteredSource[0].key
   const url = filteredSource[0].url
   const sourceName = filteredSource[0].name.split(' ').join('_')
@@ -38,11 +36,9 @@ const createEbook  = function(subscription) {
     clean: false,
     bookname: `${name}.mobi`
   }
-console.log(url);
   return new Promise((resolve, reject) => {
     return new Promise(function(resolve){ //Obtencion de info de la pagina que queremoss parsear, tenemos en cuenta si es http o https
       if (url.indexOf("https") >= 0){
-        console.log("https");
         https.get(url, (res) => {
           var data = []
           res.on('data', (d) => {
@@ -58,7 +54,6 @@ console.log(url);
       }
       else{
         http.get(url, (res) => {
-          console.log('http');
           var data = []
           res.on('data', (d) => {
             data.push(d)
@@ -85,7 +80,7 @@ console.log(url);
             }
             new Epub(options, epubPath).promise
               .then(function() {
-                  resolve (epubPath)
+                  return resolve (epubPath)
                }, function(err) {
                   return reject(err)
               })
@@ -95,28 +90,15 @@ console.log(url);
     .then(() => {
       return new Promise ((resolve) => {
         zipper.create(mobiOptions).then(() => {
-          resolve(mobiPath)
+          return resolve(mobiPath)
         }).catch(err => console.error(err))
       })
     })
     .then(() => {
-      uploadToS3(epubPath, {bundleType: 'epub', name: name})
-    })
-    .then(() => {
-      uploadToS3(mobiPath, {bundleType: 'mobi', name: name})
-    })
-    .then(() => {
-      fs.unlink(epubPath, (err) => {
-        if (err) throw err;
-      });
-      fs.unlink(mobiPath, (err) => {
-        if (err) throw err;
-      });
+      return resolve({name: name, mobiPath: mobiPath, epubPath: epubPath})
     })
     .catch(function (err) {
       console.log(err);
-    //Upload an error epub & mobi bundle to s3 saying we are sorry
-    //send us an email notifying something happened
       return reject(err)
     })
   })
