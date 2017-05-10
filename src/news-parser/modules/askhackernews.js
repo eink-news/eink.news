@@ -5,7 +5,7 @@ import https from 'https'
 
 const askhackernews = function(epub){
   return new Promise(function(resolve) {
-    // console.log("foo");
+    console.log(epub);
     var final_response = []
 
     const articlesRegex =/(<a href="item\?id=[0-9]*" class="storylink">)/g
