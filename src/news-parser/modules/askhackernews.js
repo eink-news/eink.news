@@ -6,17 +6,13 @@ import getHNComments from '../../helpers/parsing/get-HN-comments'
 
 const askhackernews = function(epub){
   return new Promise(function(resolve) {
-    // console.log("foo");
     var final_response = []
 
     const articlesRegex =/(<a href="item\?id=[0-9]*" class="storylink">)/g
     const articles = epub.match(articlesRegex)
-    // console.log('articles = ', articles);
 
     const urlRegex = /href="(item\?id=[0-9]*)"/g
     const urls = getMatches(articles.join(), urlRegex, articles.length, 1).map((url) => "https://news.ycombinator.com/"+url)
-    // console.log("number of urls: ", urls.length);
-    // console.log('urls = ', urls);
 
     const titleRegex = /<a href="item\?id=[0-9]*" class="storylink">(.*?)<\/a>/g
     const titles = getMatches(epub, titleRegex, urls.length, 1)
@@ -30,15 +26,13 @@ const askhackernews = function(epub){
             data.push(d)
           }).on('end', function() {
               const articleContent = Buffer.concat(data).toString()
-              console.log(articleContent);
-              // getHNComments(articleContent).then((commentsContent) => {
-              //   const headerWithComments = "(" + commentsContent.nComments + ") " + titles[index].replace('Ask HN: ', '')
-              //   final_response.push({title: headerWithComments, data: commentsContent.content})
-              //   resolve(true)
-              // })
+              const articleSubtitleRegex = /<tr style="height:2px"><\/tr><tr><td colspan="2"><\/td><td>([.\s\S]*)<\/td><\/tr>[\s\S]*<tr style="height:10px"><\/tr><tr><td colspan="2"><\/td><td>/g
+              const articleSubtitle = getMatches(articleContent, articleSubtitleRegex, 1)
               getHNComments(articleContent).then((commentsContent) => {
                 const headerWithComments = "(" + commentsContent.nComments + ") " + titles[index].replace('Ask HN: ', '')
-                final_response.push({title: headerWithComments, data: commentsContent.content})
+                // if the article has subtitle, add it to the parsedArticle, otherwise leave it
+                const parsedArticle = articleSubtitle ? '<b>'+articleSubtitle+'</b></br>'+commentsContent.content : commentsContent.content
+                final_response.push({title: headerWithComments, data: parsedArticle})
                 resolve(true)
               })
           })
@@ -47,19 +41,6 @@ const askhackernews = function(epub){
           console.error(e)
           resolve(false)
         })
-
-        // read(urls[index], function(err, page){
-        //   if (!err) {
-        //
-        //     final_response.push({title: header, data: page.content })
-        //     resolve(true) // com t'assegures que s'ha acabat el push abans de fer resolve?
-        //   } else {
-        //     console.log("there's been an error using read on this url: ", urls[index]);
-        //     console.log(err);
-        //     resolve(null) // should be reject
-        //   }
-        // })
-
       }) // end of returning promise
     }))
       .then(() => {
