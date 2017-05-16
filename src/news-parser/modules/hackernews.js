@@ -37,9 +37,9 @@ const hackernewsParser = function(epub){
           })
         } else { // if the link is to hackernews
           console.log('its not a normal article. Might be an askHN or a Hiring');
-          const url = `https://news.ycombinator.com/item?id=${articlesId[index]}`
+          // const url = `https://news.ycombinator.com/item?id=${articlesId[index]}`
           // follow the url and get the question if there is so
-          const question = 'Parse as askHN or hiring!'
+          // const question = 'Parse as askHN or hiring!'
           resolve({page: question, index:index})
         }
       })
@@ -88,11 +88,14 @@ const hackernewsParser = function(epub){
                     data.push(d)
                   }).on('end', function() {
                     const commentsHtml = Buffer.concat(data).toString()
+                    const articleSubtitleRegex = /<tr style="height:2px"><\/tr><tr><td colspan="2"><\/td><td>([.\s\S]*)<\/td><\/tr>[\s\S]*<tr style="height:10px"><\/tr><tr><td colspan="2"><\/td><td>/g
+                    const articleSubtitle = getMatches(articleContent, articleSubtitleRegex, 1)
                     getHNComments(commentsHtml).then((parsedComments)=> {
                       // add n of comments to the title of the article
                       const articleTitle = '(' + parsedComments.nComments + ') ' + articlesTitles[articleP.index]
-                      // add the article itself to the ebook
-                      final_response.push({title: articleTitle, data: parsedComments.content})
+                      // add the article itself to the ebook with a subtitle if it has one
+                      const content = articleSubtitle ? '<b>'+articleSubtitle+'</b></br>'+parsedComments.content : parsedComments.content
+                      final_response.push({title: articleTitle, data: content})
                       resolve(true)
                     }).catch((err)=>{
                       // no ha pogut parsejar els comentaris
