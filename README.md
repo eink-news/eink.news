@@ -2,7 +2,7 @@
 
 [![eink.news](http://i.imgur.com/jhZ525G.png)](http://eink.news)
 
-It's an app that allows you to do periodical or sporadic creation of ebooks with the content of a certain number of news websites and blogs.
+App that allows you to do periodical or sporadic creation of ebooks with the content of a certain number of news websites and blogs.
 
 ### Why?
 > **Readability and availability. The best from ebooks and mobile phones.** - " team members "
