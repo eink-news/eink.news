@@ -12,7 +12,7 @@ let timer = 0
 function scheduleBundles(){
   schedules.forEach((schedule) => {
     timer = timer + 5;
-    timer === 60 ? timer = 0 : ''
+    timer > 50  ? timer = 0 : ''
     const source = schedule.source
     const hourFreq = schedule.hourFreq
     const timeZone = schedule.timeZone
