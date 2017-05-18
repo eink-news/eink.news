@@ -41,6 +41,12 @@ Create your env variables and edit them to fill your needs
 $ cp .example.env .env
 ```
 
+If you have a mac OS, you will also have to link the path where ebook-convert is stored to another path by doing:
+
+```sh
+$ ln -s /Applications/calibre.app/Contents/MacOS/ebook-convert /usr/local/bin
+```
+
 ### Usage
 
 eink.news can either be used for single bundle creations or to be deployed in a server that runs the cronjobs periodically.
