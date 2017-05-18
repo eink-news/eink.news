@@ -14,13 +14,14 @@ const hackernewsParser = function(epub){
 
     const regex_url_article = /<a href="(.*)" class="storylink"(?: rel="nofollow")?>/g
     const articlesUrl = getMatches(articles.join(), regex_url_article, articles.length)
-    console.log(articlesUrl);
+    // console.log(articlesUrl.length);
 
     const regex_article_id = /<\/span> \| <a href="hide\?id=(.*?)&amp;goto=news">(?:[0-9]*&nbsp;comments|discuss|hide)<\/a>/g
     const articlesId = getMatches(articles.join(), regex_article_id, articles.length, 1)
 
-    const regex_article_titles = /class="storylink"[ a-zA-Z=".]*>(.*?)<\/a><span/g
+    const regex_article_titles = /class="storylink"[ a-zA-Z=".]*>(.*?)<\/a>/g
     const articlesTitles = getMatches(epub, regex_article_titles, articles.length)
+    // console.log(articlesTitles);
 
     Promise.mapSeries(articles, (function(a, index) {
       return new Promise(function(resolve){
@@ -28,7 +29,7 @@ const hackernewsParser = function(epub){
         const articleUrl = articlesUrl[index]
         const isNormalUrlRegex = /\/\//g
         if (isNormalUrlRegex.test(articleUrl)) {
-          console.log('reading content from website!');
+          // console.log('reading content from website!');
           const url = articlesUrl[index]
           // for testing purposes and going faster, uncomment next line to skip reading the website
           // resolve({page: 'Development mode, not reading.', index:index})
@@ -36,7 +37,7 @@ const hackernewsParser = function(epub){
             page ? resolve({page:page.content, index:index}) : resolve(null)
           })
         } else { // if the link is to hackernews
-          console.log('its not a normal article. Might be an askHN or a Hiring');
+          // console.log('its not a normal article. Might be an askHN or a Hiring');
           // const url = `https://news.ycombinator.com/item?id=${articlesId[index]}`
           // follow the url and get the question if there is so
           const empty = ''
@@ -46,7 +47,7 @@ const hackernewsParser = function(epub){
     }))
       .then(function(articlesParsed){
         Promise.mapSeries(articlesParsed, (function(articleP) {
-          console.log("Articles content gotten. Getting comments...");
+          // console.log("Articles content gotten. Getting comments...");
           return new Promise(function(resolve){
             if(articleP == null){
               resolve(false)
@@ -70,7 +71,7 @@ const hackernewsParser = function(epub){
                       final_response.push({title: articleTitle, data: articleP.page})
                       // add the comments to the ebook
                       final_response.push({title: articleCommentsTitle, data: parsedComments.content})
-                      console.log('Added article content and Comments to ebook!');
+                      // console.log('Added article content and Comments to ebook!');
                       resolve(true)
                     })
                   }).on('error', (e) => {
@@ -114,7 +115,7 @@ const hackernewsParser = function(epub){
 
               }
             } else {
-              console.log('Ups! Something happended and we coudnt parse the content nor comments');
+              // console.log('Ups! Something happended and we coudnt parse the content nor comments');
               resolve(false)
             }
           })
