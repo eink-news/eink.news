@@ -39,8 +39,8 @@ const hackernewsParser = function(epub){
           console.log('its not a normal article. Might be an askHN or a Hiring');
           // const url = `https://news.ycombinator.com/item?id=${articlesId[index]}`
           // follow the url and get the question if there is so
-          // const question = 'Parse as askHN or hiring!'
-          resolve({page: question, index:index})
+          const empty = ''
+          resolve({page: empty, index:index})
         }
       })
     }))
