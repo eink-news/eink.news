@@ -23,16 +23,16 @@ const schedules = [
     hourFreq: '*',
     timeZone: 'America/Los_Angeles'
   },
-  {
-    source: 'hackernews',
-    hourFreq: '*',
-    timeZone: 'America/Los_Angeles'
-  },
-  {
-    source: 'indiehackers',
-    hourFreq: '*/3',
-    timeZone: 'America/Los_Angeles'
-  }
+  // {
+  //   source: 'hackernews',
+  //   hourFreq: '*',
+  //   timeZone: 'America/Los_Angeles'
+  // },
+  // {
+  //   source: 'hackernews',
+  //   hourFreq: '*',
+  //   timeZone: 'America/Los_Angeles'
+  // }
 ]
 
 export default schedules;

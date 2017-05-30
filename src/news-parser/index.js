@@ -71,6 +71,7 @@ const createEbook  = function(subscription) {
       return new Promise((resolve, reject) => {
         modules()[key](ebook)
           .then((content) => {
+            console.log(content);
             const options = {
                 title: `${sourceName} ${date}`,
                 author: url,
@@ -82,12 +83,14 @@ const createEbook  = function(subscription) {
               .then(function() {
                   return resolve (epubPath)
                }, function(err) {
+                 console.log(err);
                   return reject(err)
               })
           })
       })
     })
     .then(() => {
+      console.log(epubPath);
       return new Promise ((resolve) => {
         zipper.create(mobiOptions).then(() => {
           return resolve(mobiPath)

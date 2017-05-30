@@ -22,6 +22,7 @@ const hackernewsParser = function(epub){
     const regex_article_titles = /class="storylink"[ a-zA-Z=".]*>(.*?)<\/a><span/g
     const articlesTitles = getMatches(epub, regex_article_titles, articles.length)
 
+
     Promise.mapSeries(articles, (function(a, index) {
       return new Promise(function(resolve){
         // if its a normal article (we know it because it has //, HN links like askHN or hiring are relative urls)
@@ -32,9 +33,23 @@ const hackernewsParser = function(epub){
           const url = articlesUrl[index]
           // for testing purposes and going faster, uncomment next line to skip reading the website
           // resolve({page: 'Development mode, not reading.', index:index})
-          read(url, function(err, page){
-            page ? resolve({page:page.content, index:index}) : resolve(null)
+          read(url,
+            // {
+            // cleanRulers: [
+            //   function(obj, tag) {
+            //     if(tag === 'p') {
+            //       return true
+            //     }
+            //   }
+            // ]},
+            // preprocess: function(source, response, contentType, callback) {
+            //   if (source.length > maxBodySize) {
+            //     return callback(new Error('too big'));
+            // },
+            function(err, page){
+              page ? resolve({page:page.content, index:index}) : resolve(null)
           })
+          // resolve({page:'<div>hole</hole>', index:index})
         } else { // if the link is to hackernews
           console.log('its not a normal article. Might be an askHN or a Hiring');
           // const url = `https://news.ycombinator.com/item?id=${articlesId[index]}`
