@@ -5,6 +5,7 @@ import Promise from 'bluebird'
 import getMatches from '../get-matches.js'
 
 const getHNComments = function(articleCommentsHtml){
+  console.log("comments");
   return new Promise(function(resolve) {
     // regex to check if there is comments in the post
     const isNotCommentedRegex = />discuss<\/a>/g
