@@ -48,25 +48,22 @@ function scheduleBundles(){
           .then(() => {
           console.log(ebookSize);
           console.log(ebookSizeDB);
-            if (ebookSizeDB < ebookSize+5 && ebookSizeDB > ebookSize-5){
+            if (ebookSizeDB < ebookSize+100 && ebookSizeDB > ebookSize-100){
               console.log('same-size');
+              return(true)
             }else{
               console.log('different-size');
-              return new Promise((resolve, reject) => {
-                console.log("aws-epub");
-                uploadToS3(ebookData.epubPath, {bundleType: 'epub', name: ebookData.name})
-                .then(() => {
-                  console.log('aws-mobi');
-                  uploadToS3(ebookData.mobiPath, {bundleType: 'mobi', name: ebookData.name})
-                })
-                .then(() => {
-                  console.log('db');
-                  const time = new Date();
-                  new Ebook({parser: source, name: ebookData.name, size: ebookSize, time: time}).save()
-                  .then(() => {
-                    resolve(true)
-                  })
-                })
+              return uploadToS3(ebookData.epubPath, {bundleType: 'epub', name: ebookData.name})
+              .then(() => {
+                return uploadToS3(ebookData.mobiPath, {bundleType: 'mobi', name: ebookData.name})
+              })
+              .then(() => {
+                console.log('db');
+                const time = new Date();
+                return new Ebook({parser: source, name: ebookData.name, size: ebookSize, time: time}).save()
+              })
+              .then(() => {
+                return (true)
               })
             }
           })
