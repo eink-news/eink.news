@@ -5,7 +5,7 @@ import Promise from 'bluebird'
 import getMatches from '../get-matches.js'
 
 const getHNComments = function(articleCommentsHtml){
-  console.log("comments");
+  console.log("comentssss");
   return new Promise(function(resolve) {
     // regex to check if there is comments in the post
     const isNotCommentedRegex = />discuss<\/a>/g
@@ -18,7 +18,9 @@ const getHNComments = function(articleCommentsHtml){
 
     // get an array of usernames of each comment
     const usernameRegex = /<span class="comhead">[\s\S]*?<a.*?"hnuser">(.*?)<\/a>/g
-    const usernames = getMatches(articleCommentsHtml, usernameRegex, nComments, 1)
+    getMatches(articleCommentsHtml, usernameRegex, nComments, 1, (usernames) => {
+
+
 
     // get an array of comments content
     const commentsRegex = /<\/span><\/div><br><div class="comment">[\s\S]*?<span class="[\w\d]*">([.\s\S]*?)<span>[\s\S]*?<\/span><div class='reply'>/g
@@ -52,6 +54,7 @@ const getHNComments = function(articleCommentsHtml){
       }
       resolve(commentsContent)
     }
+    })
   })
 }
 
