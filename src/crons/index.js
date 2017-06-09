@@ -8,10 +8,10 @@ import schedules from './schedules.js'
 import createEbook from '../news-parser'
 import uploadToS3 from '../helpers/upload-to-s3'
 //Quan s'inicia el server mira la programació establerta a schedules.js i crea 1 cronjob per cada parser
-let timer = 0
+let timer = 6
 function scheduleBundles(){
   schedules.forEach((schedule) => {
-    timer = timer + 5;
+    // timer = timer + 5;
     timer > 50  ? timer = 0 : ''
     const source = schedule.source
     const hourFreq = schedule.hourFreq
@@ -54,9 +54,12 @@ function scheduleBundles(){
               console.log('different-size');
               return new Promise((resolve, reject) => {
                 console.log("aws-epub");
+                // fs.chmodSync(ebookData.epubPath, '777');
+                // console.log("changed permissions for "+ebookData.epubPath);
                 uploadToS3(ebookData.epubPath, {bundleType: 'epub', name: ebookData.name})
                 .then(() => {
                   console.log('aws-mobi');
+                  // fs.chmodSync(ebookData.mobiPath, '777');
                   uploadToS3(ebookData.mobiPath, {bundleType: 'mobi', name: ebookData.name})
                 })
                 .then(() => {
@@ -80,7 +83,10 @@ function scheduleBundles(){
              });
            })
           .then(()=> {
-            https.get("https://hchk.io/39f91551-ad45-4f81-8c2d-bb1b2bb109b2");
+            console.log(schedule.source);
+            console.log(schedule.healthcheckUrl);
+            const healthcheckUrl = schedule.healthcheckUrl
+            https.get(healthcheckUrl);
           })
         })
       },
