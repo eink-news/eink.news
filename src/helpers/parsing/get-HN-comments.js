@@ -6,19 +6,15 @@ import getMatches from '../get-matches.js'
 
 const getHNComments = function(articleCommentsHtml){
   console.log("comentssss");
-  console.log(articleCommentsHtml);
   return new Promise(function(resolve) {
     // regex to check if there is comments in the post
     const isNotCommentedRegex = />discuss<\/a>/g
     // initialize comments to 0 in case there is none
     let nComments = 0;
     // if there is comments, find how many
-    console.log("test1");
     if (!isNotCommentedRegex.test(articleCommentsHtml)) {
-      console.log("test2");
       nComments = parseInt(articleCommentsHtml.match(/([0-9]*)&nbsp;comment(?:s)?/g)[0])
     }
-    console.log("test3");
 
     // get an array of usernames of each comment
     const usernameRegex = /<span class="comhead">[\s\S]*?<a.*?"hnuser">(.*?)<\/a>/g

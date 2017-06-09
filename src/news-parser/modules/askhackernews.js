@@ -37,7 +37,9 @@ const askhackernews = function(epub){
                       // if the article has subtitle, add it to the parsedArticle, otherwise leave it
                       const parsedArticle = articleSubtitle ? '<b>'+articleSubtitle+'</b></br>'+commentsContent.content : commentsContent.content
                       final_response.push({title: headerWithComments, data: parsedArticle})
-                      resolve(true)
+                      setTimeout(() => {
+                        resolve(true), 1000
+                      })
                     })
                   })
               })
