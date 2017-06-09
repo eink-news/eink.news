@@ -24,12 +24,12 @@ const schedules = [
     timeZone: 'America/Los_Angeles',
     healthcheckUrl: 'https://hchk.io/08576787-5063-45ff-ad57-f77338945100'
   },
-  {
-    source: 'hackernews',
-    hourFreq: '*',
-    timeZone: 'America/Los_Angeles',
-    healthcheckUrl: 'https://hchk.io/39f91551-ad45-4f81-8c2d-bb1b2bb109b2'
-  },
+  // {
+  //   source: 'hackernews',
+  //   hourFreq: '*',
+  //   timeZone: 'America/Los_Angeles',
+  //   healthcheckUrl: 'https://hchk.io/39f91551-ad45-4f81-8c2d-bb1b2bb109b2'
+  // },
   {
     source: 'indiehackers',
     hourFreq: '*/3',
