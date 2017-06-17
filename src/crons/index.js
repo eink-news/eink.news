@@ -8,10 +8,10 @@ import schedules from './schedules.js'
 import createEbook from '../news-parser'
 import uploadToS3 from '../helpers/upload-to-s3'
 //Quan s'inicia el server mira la programació establerta a schedules.js i crea 1 cronjob per cada parser
-let timer = 6
+let timer = 0;
 function scheduleBundles(){
   schedules.forEach((schedule) => {
-    // timer = timer + 5;
+    timer = timer + 5;
     timer > 50  ? timer = 0 : ''
     const source = schedule.source
     const hourFreq = schedule.hourFreq
