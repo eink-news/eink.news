@@ -48,7 +48,7 @@ const askhackernews = function(epub){
               resolve(false)
             })
 
-          }, 1000)
+          }, 3000)
         }) // end of returning promise
         }))
           .then(() => {
