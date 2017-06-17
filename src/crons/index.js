@@ -79,7 +79,7 @@ function scheduleBundles(){
           .then(()=> {
             console.log(schedule.source);
             console.log(schedule.healthcheckUrl);
-            const healthcheckUrl = schedule.healthcheckUrl
+            let healthcheckUrl = schedule.healthcheckUrl;
             https.get(healthcheckUrl);
           })
         })

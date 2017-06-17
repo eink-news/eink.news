@@ -12,8 +12,8 @@ const getHNComments = function(articleCommentsHtml){
     // initialize comments to 0 in case there is none
     let nComments = 0;
     // if there is comments, find how many
-    if (articleCommentsHtml.match(/([0-9]*)&nbsp;comment(?:s)?/g)) {
-        nComments = parseInt(articleCommentsHtml.match(/([0-9]*)&nbsp;comment(?:s)?/g)[0])
+    if (!isNotCommentedRegex.test(articleCommentsHtml)) {
+      nComments = parseInt(articleCommentsHtml.match(/([0-9]*)&nbsp;comment(?:s)?/g)[0])
     }
 
     // get an array of usernames of each comment
