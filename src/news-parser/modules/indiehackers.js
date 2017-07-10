@@ -7,11 +7,11 @@ const indiehackersParser = function(epub){
     console.log("crash");
     //Variables declaration: response array, Regex to get all the articles, Regex to get all article links, and a cleaning sentence to delete some unnecessary links from the ebook
     var final_response = []
-    const regex_articles = /<li id="ember[0-9]*" data-business-id=[\s\S]*? href="(.*?)"[\s\S]*?/g
-    const regex_url= /<li id="ember[0-9]*" data-business-id=[\s\S]*? href="(.*?)"[\s\S]*?<p class="interview-link__name">(.*?)<\/p>[\s\S]*?<p class="interview-link__subtitle">(.*?)<\/p>[\s\S]*?class="ember-view business-revenue">[ <!---->]*[> ]([\s\S]*?)<\/div>\s*?<span class="interview-link__founder-name">([\s\S]*?)<\/span>/g
-    const regex_title = /<li id="ember[0-9]*" data-business-id=[\s\S]*? href="(.*?)"[\s\S]*?<p class="interview-link__name">(.*?)<\/p>[\s\S]*?<p class="interview-link__subtitle">(.*?)<\/p>[\s\S]*?class="ember-view business-revenue">[ <!---->]*[> ]([\s\S]*?)<\/div>\s*?<span class="interview-link__founder-name">([\s\S]*?)<\/span>/g
-    const regex_description = /<li id="ember[0-9]*" data-business-id=[\s\S]*? href="(.*?)"[\s\S]*?<p class="interview-link__name">(.*?)<\/p>[\s\S]*?<p class="interview-link__subtitle">(.*?)<\/p>[\s\S]*?class="ember-view business-revenue">[ <!---->]*[> ]([\s\S]*?)<\/div>\s*?<span class="interview-link__founder-name">([\s\S]*?)<\/span>/g
-    const regex_revenue = /<li id="ember[0-9]*" data-business-id=[\s\S]*? href="(.*?)"[\s\S]*?<p class="interview-link__name">(.*?)<\/p>[\s\S]*?<p class="interview-link__subtitle">(.*?)<\/p>[\s\S]*?class="ember-view business-revenue">[ <!---->]*[> ]([\s\S]*?)<\/div>\s*?<span class="interview-link__founder-name">([\s\S]*?)<\/span>/g
+    const regex_articles = /<li data-business-id=[\s\S]*? id="ember[0-9]*"/g
+    const regex_url= /<a href="\/businesses\/(.*?)" id="ember[0-9]*" class="interview-link__link ember-view">/g
+    const regex_title = /<p class="interview-link__name">(.*?)<\/p>/g
+    const regex_description = /<p class="interview-link__subtitle">(.*?)<\/p>/g
+    const regex_revenue = /<div id="ember[0-9]*" class="business-revenue ember-view">[ <!---->]*[> ]([\s\S]*?)<\/div>\s*?/g
 
     // articles and url articles, all detected by the usage of regex.
     const articles = epub.match(regex_articles)
@@ -37,7 +37,7 @@ const indiehackersParser = function(epub){
         Promise.mapSeries(articles, (function(a, index) {
           return new Promise(function(resolve){
             if(urls[index-1] != null & title[index-1]!= null & description[index-1]!= null & revenue[index-1]!= null ){
-              read(`https://www.indiehackers.com/${urls[index-1]}`, function(err, page){
+              read(`https://www.indiehackers.com/businesses/${urls[index-1]}`, function(err, page){
                   // console.log(page);
                   let header = title[index-1] + '; ' + description[index-1] + '; Revenue: ' +  revenue[index-1];
                   page ? final_response.push({ title: header , data: page.content }) & resolve(true) : resolve(null)
